@@ -1,0 +1,1009 @@
+{
+  "initialised": true,
+  "seed_source": "backend_sample_events_from_event_js",
+  "events": [
+    {
+      "id": "event-1",
+      "title": "Summer Opening Concert",
+      "date": "18 Apr 2026",
+      "time": "20:00",
+      "end_time": "23:00",
+      "venue": "Amphithéâtre de Carthage",
+      "venue_id": "venue-8",
+      "city": "Tunis",
+      "type": "Concerts",
+      "description": "A big open-air pop concert featuring live vocals, visual effects, and a premium summer crowd atmosphere.",
+      "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-7", "user-30", "user-32"],
+      "age_restriction": "15+",
+      "tickets_sold": 25400,
+      "capacity": 30000,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.5,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "ticket_prices": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-1",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-41",
+      "title": "Ariana Live Concert",
+      "date": "25 Apr 2026",
+      "time": "20:30",
+      "end_time": "22:30",
+      "venue": "Pathé Tunis City",
+      "venue_id": "venue-5",
+      "city": "Ariana",
+      "type": "Concerts",
+      "description": "A modern indoor concert in Ariana with pop, rap, and live stage visuals.",
+      "image": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-7", "user-11"],
+      "age_restriction": "12+",
+      "tickets_sold": 380,
+      "capacity": 450,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.7,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 38,
+        "VIP": 65
+      },
+      "ticket_prices": {
+        "Normal": 38,
+        "VIP": 65
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-41",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-42",
+      "title": "Ariana Movie Night",
+      "date": "26 Apr 2026",
+      "time": "19:00",
+      "end_time": "21:00",
+      "venue": "Pathé Tunis City",
+      "venue_id": "venue-5",
+      "city": "Ariana",
+      "type": "Movies",
+      "description": "A premium movie night in Ariana with a young fan crowd and comfortable cinema seating.",
+      "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-18"],
+      "age_restriction": "All ages",
+      "tickets_sold": 240,
+      "capacity": 450,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.3,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 32,
+        "VIP": 50
+      },
+      "ticket_prices": {
+        "Normal": 32,
+        "VIP": 50
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-42",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-43",
+      "title": "Ariana Football Fan Zone",
+      "date": "26 Apr 2026",
+      "time": "17:00",
+      "end_time": "19:00",
+      "venue": "Ariana Sports Hall",
+      "venue_id": "venue-18",
+      "city": "Ariana",
+      "type": "Sports",
+      "description": "A sports fan-zone event with football screening, chants, and community atmosphere.",
+      "image": "https://images.unsplash.com/photo-1518604666860-9ed391f76460?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1518604666860-9ed391f76460?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-25"],
+      "age_restriction": "All ages",
+      "tickets_sold": 180,
+      "capacity": 300,
+      "featured": false,
+      "last_call": true,
+      "accessible_seats": true,
+      "review_rating": 4.2,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 20,
+        "VIP": 45
+      },
+      "ticket_prices": {
+        "Normal": 20,
+        "VIP": 45
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-43",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-2",
+      "title": "Weekend Football Clash",
+      "date": "25 Apr 2026",
+      "time": "18:00",
+      "end_time": "20:00",
+      "venue": "Stade Olympique de Radès",
+      "venue_id": "venue-9",
+      "city": "Ben Arous",
+      "type": "Sports",
+      "description": "A high-energy football match with strong chants, packed stands, and a lively weekend crowd.",
+      "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-25"],
+      "age_restriction": "All ages",
+      "tickets_sold": 52000,
+      "capacity": 60000,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.4,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 25,
+        "VIP": 70
+      },
+      "ticket_prices": {
+        "Normal": 25,
+        "VIP": 70
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-2",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-3",
+      "title": "Magic Night",
+      "date": "02 May 2026",
+      "time": "19:30",
+      "end_time": "21:00",
+      "venue": "Complexe Culturel de Monastir",
+      "venue_id": "venue-1",
+      "city": "Monastir",
+      "type": "Shows",
+      "description": "A family-friendly illusion and magic performance with stage acts, audience interaction, and theatrical effects.",
+      "image": "https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-27", "user-33"],
+      "age_restriction": "All ages",
+      "tickets_sold": 180,
+      "capacity": 350,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.4,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "ticket_prices": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-3",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-4",
+      "title": "Heritage Fashion Expo",
+      "date": "08 May 2026",
+      "time": "10:00",
+      "end_time": "18:00",
+      "venue": "Palais Ennejma Ezzahra",
+      "venue_id": "venue-7",
+      "city": "Tunis",
+      "type": "Exhibitions",
+      "description": "A fashion and culture expo with themed booths, exhibitions, and artisan showcases in a heritage venue.",
+      "image": "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-14", "user-22", "user-34"],
+      "age_restriction": "All ages",
+      "tickets_sold": 210,
+      "capacity": 250,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.0,
+      "seat_classes": ["Normal"],
+      "seat_pricing": {
+        "Normal": 25
+      },
+      "ticket_prices": {
+        "Normal": 25
+      },
+      "seat_layout": null,
+      "sound_quality": 1,
+      "route_path": "/o_eventinfo?id=event-4",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-5",
+      "title": "Rock & Pop Night",
+      "date": "14 May 2026",
+      "time": "21:00",
+      "end_time": "23:30",
+      "venue": "Amphithéâtre de Carthage",
+      "venue_id": "venue-8",
+      "city": "Tunis",
+      "type": "Concerts",
+      "description": "A high-energy open-air concert blending pop and rock stage energy, premium visuals, and almost sold-out seating.",
+      "image": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-5", "user-7", "user-10"],
+      "age_restriction": "15+",
+      "tickets_sold": 28700,
+      "capacity": 30000,
+      "featured": false,
+      "last_call": true,
+      "accessible_seats": false,
+      "review_rating": 4.6,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "ticket_prices": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-5",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-6",
+      "title": "Rooftop DJ Set",
+      "date": "20 May 2026",
+      "time": "22:00",
+      "end_time": "01:00",
+      "venue": "Dar El Marsa Rooftop Bar",
+      "venue_id": "venue-12",
+      "city": "Tunis",
+      "type": "Shows",
+      "description": "A nightlife DJ event with rooftop atmosphere, drinks, modern visuals, and very few tickets left.",
+      "image": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-13", "user-17"],
+      "age_restriction": "18+",
+      "tickets_sold": 90,
+      "capacity": 120,
+      "featured": false,
+      "last_call": true,
+      "accessible_seats": false,
+      "review_rating": 4.2,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "ticket_prices": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-6",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-7",
+      "title": "Local Football Derby",
+      "date": "27 May 2026",
+      "time": "19:00",
+      "end_time": "21:00",
+      "venue": "Stade Olympique de Sousse",
+      "venue_id": "venue-10",
+      "city": "Sousse",
+      "type": "Sports",
+      "description": "A local derby with a passionate crowd, strong home support, and a classic weekend sports atmosphere.",
+      "image": "https://images.unsplash.com/photo-1518604666860-9ed391f76460?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1518604666860-9ed391f76460?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-25"],
+      "age_restriction": "All ages",
+      "tickets_sold": 39600,
+      "capacity": 40000,
+      "featured": true,
+      "last_call": true,
+      "accessible_seats": true,
+      "review_rating": 4.6,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 25,
+        "VIP": 70
+      },
+      "ticket_prices": {
+        "Normal": 25,
+        "VIP": 70
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-7",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-8",
+      "title": "Monastir Basketball Derby",
+      "date": "03 Jun 2026",
+      "time": "17:00",
+      "end_time": "19:00",
+      "venue": "Salle Couverte Mohamed Mzali",
+      "venue_id": "venue-11",
+      "city": "Monastir",
+      "type": "Sports",
+      "description": "An indoor basketball derby in Monastir with strong home crowd energy and limited tickets remaining.",
+      "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-31"],
+      "age_restriction": "All ages",
+      "tickets_sold": 4100,
+      "capacity": 5000,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.6,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 22,
+        "VIP": 44
+      },
+      "ticket_prices": {
+        "Normal": 22,
+        "VIP": 44
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-8",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-9",
+      "title": "Film Premiere Night",
+      "date": "09 Jun 2026",
+      "time": "19:00",
+      "end_time": "21:00",
+      "venue": "Pathé Azur City",
+      "venue_id": "venue-2",
+      "city": "Ben Arous",
+      "type": "Movies",
+      "description": "A red-carpet style film premiere in a modern multiplex cinema with full audience seating.",
+      "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-18", "user-27", "user-33", "user-22"],
+      "age_restriction": "15+",
+      "tickets_sold": 360,
+      "capacity": 420,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.3,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 36,
+        "VIP": 58
+      },
+      "ticket_prices": {
+        "Normal": 36,
+        "VIP": 58
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-9",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-10",
+      "title": "Electronic Hall Session",
+      "date": "15 Jun 2026",
+      "time": "19:30",
+      "end_time": "21:30",
+      "venue": "Théâtre de l’Opéra de Tunis",
+      "venue_id": "venue-4",
+      "city": "Tunis",
+      "type": "Shows",
+      "description": "A premium electronic stage evening with immersive visuals and strong live sound.",
+      "image": "https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-10", "user-13", "user-32"],
+      "age_restriction": "15+",
+      "tickets_sold": 1620,
+      "capacity": 1800,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.4,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "ticket_prices": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-10",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-11",
+      "title": "Startup Summit Tunisia",
+      "date": "22 Jun 2026",
+      "time": "09:00",
+      "end_time": "17:00",
+      "venue": "Tunis Marriott Hotel",
+      "venue_id": "venue-15",
+      "city": "Tunis",
+      "type": "Education",
+      "description": "A business and innovation summit with talks, startup booths, and networking sessions.",
+      "image": "https://images.unsplash.com/photo-1517502884422-41eaead166d4?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1517502884422-41eaead166d4?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-6", "user-8", "user-16", "user-29"],
+      "age_restriction": "All ages",
+      "tickets_sold": 540,
+      "capacity": 700,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.2,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 34,
+        "VIP": 80
+      },
+      "ticket_prices": {
+        "Normal": 34,
+        "VIP": 80
+      },
+      "seat_layout": null,
+      "sound_quality": 1,
+      "route_path": "/o_eventinfo?id=event-11",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-12",
+      "title": "Karim Ben Amor Comedy Night",
+      "date": "30 Jun 2026",
+      "time": "20:30",
+      "end_time": "22:00",
+      "venue": "The Saloon",
+      "venue_id": "venue-13",
+      "city": "Sousse",
+      "type": "Comedy",
+      "description": "A small-scale comedy evening in Sousse with intimate seating, casual energy, and sharp crowd work.",
+      "image": "https://images.unsplash.com/photo-1527224857830-43a7acc85260?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1527224857830-43a7acc85260?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-5", "user-17"],
+      "age_restriction": "18+",
+      "tickets_sold": 96,
+      "capacity": 110,
+      "featured": false,
+      "last_call": true,
+      "accessible_seats": false,
+      "review_rating": 4.3,
+      "seat_classes": ["Normal"],
+      "seat_pricing": {
+        "Normal": 30
+      },
+      "ticket_prices": {
+        "Normal": 30
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-12",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-13",
+      "title": "Carthage Music Festival Night 2",
+      "date": "10 Jul 2026",
+      "time": "21:00",
+      "end_time": "23:45",
+      "venue": "Amphithéâtre de Carthage",
+      "venue_id": "venue-8",
+      "city": "Tunis",
+      "type": "Concerts",
+      "description": "A major open-air music festival night with headline performers and sold-out attendance.",
+      "image": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-5", "user-7", "user-30", "user-32"],
+      "age_restriction": "15+",
+      "tickets_sold": 28600,
+      "capacity": 30000,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.9,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "ticket_prices": {
+        "Normal": 45,
+        "VIP": 110
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-13",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-14",
+      "title": "Summer Lifestyle Expo",
+      "date": "18 Jul 2026",
+      "time": "11:00",
+      "end_time": "18:00",
+      "venue": "Marina Cap Monastir Appart Hôtel",
+      "venue_id": "venue-16",
+      "city": "Monastir",
+      "type": "Exhibitions",
+      "description": "A seaside lifestyle expo with curated stands, local brands, design showcases, and a polished marina atmosphere.",
+      "image": "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-9", "user-14", "user-22", "user-26", "user-34"],
+      "age_restriction": "All ages",
+      "tickets_sold": 190,
+      "capacity": 240,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.0,
+      "seat_classes": ["Normal"],
+      "seat_pricing": {
+        "Normal": 18
+      },
+      "ticket_prices": {
+        "Normal": 18
+      },
+      "seat_layout": null,
+      "sound_quality": 1,
+      "route_path": "/o_eventinfo?id=event-14",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-23",
+      "title": "The Yassines: Midnight Syntax",
+      "date": "06 Jun 2026",
+      "time": "20:30",
+      "end_time": "22:30",
+      "venue": "Théâtre de l’Opéra de Tunis",
+      "venue_id": "venue-4",
+      "city": "Tunis",
+      "type": "Concerts",
+      "description": "A live duet night built around smooth vocals, soft crowd singalongs, and a polished indoor concert atmosphere.",
+      "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-11", "user-12"],
+      "age_restriction": "12+",
+      "tickets_sold": 1240,
+      "capacity": 1800,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.8,
+      "seat_classes": ["VIP", "Special", "Normal"],
+      "seat_pricing": {
+        "Normal": 48,
+        "Special": 78,
+        "VIP": 115
+      },
+      "ticket_prices": {
+        "Normal": 48,
+        "Special": 78,
+        "VIP": 115
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-23",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-24",
+      "title": "The Yassines: Three-Way Static",
+      "date": "08 Jun 2026",
+      "time": "21:00",
+      "end_time": "23:10",
+      "venue": "Théâtre municipal de Tunis",
+      "venue_id": "venue-3",
+      "city": "Tunis",
+      "type": "Concerts",
+      "description": "A sharper late-evening live set mixing melodic hooks, rap sections, and a louder city-night crowd energy.",
+      "image": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-11", "user-12", "user-32"],
+      "age_restriction": "14+",
+      "tickets_sold": 990,
+      "capacity": 1350,
+      "featured": true,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.9,
+      "seat_classes": ["VIP", "Special", "Normal"],
+      "seat_pricing": {
+        "Normal": 55,
+        "Special": 89,
+        "VIP": 135
+      },
+      "ticket_prices": {
+        "Normal": 55,
+        "Special": 89,
+        "VIP": 135
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-24",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-25",
+      "title": "Slaymiya Under the Stars",
+      "date": "10 Jun 2026",
+      "time": "21:00",
+      "end_time": "23:00",
+      "venue": "Palais Ennejma Ezzahra",
+      "venue_id": "venue-7",
+      "city": "Tunis",
+      "type": "Cultural Nights",
+      "description": "A traditional Tunisian spiritual music evening with a calm seated audience, heritage acoustics, and a refined late-night atmosphere.",
+      "image": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-7", "user-11", "user-12"],
+      "age_restriction": "All ages",
+      "tickets_sold": 188,
+      "capacity": 250,
+      "featured": true,
+      "last_call": true,
+      "accessible_seats": false,
+      "review_rating": 4.9,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 42,
+        "VIP": 68
+      },
+      "ticket_prices": {
+        "Normal": 42,
+        "VIP": 68
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-25",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-26",
+      "title": "Medina Rhythm Showcase",
+      "date": "11 Jun 2026",
+      "time": "19:30",
+      "end_time": "21:15",
+      "venue": "Complexe Culturel de Monastir",
+      "venue_id": "venue-1",
+      "city": "Monastir",
+      "type": "Shows",
+      "description": "A staged variety performance blending dance, movement, and crowd interaction in a medium-size theatre room.",
+      "image": "https://images.unsplash.com/photo-1503095396549-807759245b35?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1503095396549-807759245b35?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-5", "user-10", "user-30"],
+      "age_restriction": "12+",
+      "tickets_sold": 262,
+      "capacity": 350,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.4,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 39,
+        "VIP": 64
+      },
+      "ticket_prices": {
+        "Normal": 39,
+        "VIP": 64
+      },
+      "seat_layout": null,
+      "sound_quality": 3,
+      "route_path": "/o_eventinfo?id=event-26",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-27",
+      "title": "Spoken Stories at Sunset",
+      "date": "12 Jun 2026",
+      "time": "18:30",
+      "end_time": "20:30",
+      "venue": "Tunis Marriott Hotel",
+      "venue_id": "venue-15",
+      "city": "Tunis",
+      "type": "Education",
+      "description": "A curated evening of short talks, storytelling, and public speaking built for a thoughtful afterwork crowd.",
+      "image": "https://images.unsplash.com/photo-1517502884422-41eaead166d4?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1517502884422-41eaead166d4?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-6", "user-16", "user-29"],
+      "age_restriction": "All ages",
+      "tickets_sold": 401,
+      "capacity": 700,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.5,
+      "seat_classes": ["VIP", "Special", "Normal"],
+      "seat_pricing": {
+        "Normal": 34,
+        "Special": 55,
+        "VIP": 80
+      },
+      "ticket_prices": {
+        "Normal": 34,
+        "Special": 55,
+        "VIP": 80
+      },
+      "seat_layout": null,
+      "sound_quality": 1,
+      "route_path": "/o_eventinfo?id=event-27",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-28",
+      "title": "Product Builders Forum",
+      "date": "13 Jun 2026",
+      "time": "09:30",
+      "end_time": "16:30",
+      "venue": "Sousse Palace Hotel & Spa",
+      "venue_id": "venue-17",
+      "city": "Sousse",
+      "type": "Education",
+      "description": "A one-day forum for student founders, builders, and product-minded guests with talks and networking breaks.",
+      "image": "https://images.unsplash.com/photo-1517502884422-41eaead166d4?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1517502884422-41eaead166d4?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-8", "user-16", "user-29"],
+      "age_restriction": "All ages",
+      "tickets_sold": 286,
+      "capacity": 500,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.3,
+      "seat_classes": ["VIP", "Special", "Normal"],
+      "seat_pricing": {
+        "Normal": 30,
+        "Special": 52,
+        "VIP": 76
+      },
+      "ticket_prices": {
+        "Normal": 30,
+        "Special": 52,
+        "VIP": 76
+      },
+      "seat_layout": null,
+      "sound_quality": 1,
+      "route_path": "/o_eventinfo?id=event-28",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-29",
+      "title": "Coastal Football Showcase",
+      "date": "14 Jun 2026",
+      "time": "18:00",
+      "end_time": "20:00",
+      "venue": "Stade Olympique de Radès",
+      "venue_id": "venue-9",
+      "city": "Ben Arous",
+      "type": "Sports",
+      "description": "A high-attendance football night built around fast play, chants, and a big summer stadium crowd.",
+      "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-25"],
+      "age_restriction": "All ages",
+      "tickets_sold": 33600,
+      "capacity": 60000,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.6,
+      "seat_classes": ["VIP", "Special", "Normal"],
+      "seat_pricing": {
+        "Normal": 25,
+        "Special": 40,
+        "VIP": 70
+      },
+      "ticket_prices": {
+        "Normal": 25,
+        "Special": 40,
+        "VIP": 70
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-29",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-31",
+      "title": "Anime Movie Marathon",
+      "date": "18 Jun 2026",
+      "time": "16:00",
+      "end_time": "22:30",
+      "venue": "Pathé Tunis City",
+      "venue_id": "venue-5",
+      "city": "Ariana",
+      "type": "Movies",
+      "description": "A multi-film anime screening block with themed breaks, collectible-style energy, and a young fan crowd.",
+      "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-9", "user-22"],
+      "age_restriction": "13+",
+      "tickets_sold": 298,
+      "capacity": 450,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.5,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 32,
+        "VIP": 49
+      },
+      "ticket_prices": {
+        "Normal": 32,
+        "VIP": 49
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-31",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-32",
+      "title": "Midnight Horror Premiere",
+      "date": "19 Jun 2026",
+      "time": "21:30",
+      "end_time": "23:30",
+      "venue": "Pathé Azur City",
+      "venue_id": "venue-2",
+      "city": "Ben Arous",
+      "type": "Movies",
+      "description": "A late-night horror premiere with a full cinema crowd, dark visuals, and a cast-style discussion after the screening.",
+      "image": "https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-18", "user-27", "user-33"],
+      "age_restriction": "16+",
+      "tickets_sold": 365,
+      "capacity": 420,
+      "featured": true,
+      "last_call": true,
+      "accessible_seats": true,
+      "review_rating": 4.6,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 36,
+        "VIP": 58
+      },
+      "ticket_prices": {
+        "Normal": 36,
+        "VIP": 58
+      },
+      "seat_layout": null,
+      "sound_quality": 2,
+      "route_path": "/o_eventinfo?id=event-32",
+      "creator_user_id": null
+    },
+    {
+      "id": "event-34",
+      "title": "Taste of Tunis Night",
+      "date": "23 Jun 2026",
+      "time": "18:30",
+      "end_time": "22:00",
+      "venue": "Marina Cap Monastir Appart Hôtel",
+      "venue_id": "venue-16",
+      "city": "Monastir",
+      "type": "Food & Culture",
+      "description": "A social evening around Tunisian flavors, soft live ambiance, and a marina-side crowd looking for a relaxed summer night.",
+      "image": "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1200&auto=format&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "featured_artist_ids": ["user-9", "user-22", "user-34"],
+      "age_restriction": "All ages",
+      "tickets_sold": 166,
+      "capacity": 240,
+      "featured": false,
+      "last_call": false,
+      "accessible_seats": true,
+      "review_rating": 4.1,
+      "seat_classes": ["VIP", "Normal"],
+      "seat_pricing": {
+        "Normal": 28,
+        "VIP": 47
+      },
+      "ticket_prices": {
+        "Normal": 28,
+        "VIP": 47
+      },
+      "seat_layout": null,
+      "sound_quality": 1,
+      "route_path": "/o_eventinfo?id=event-34",
+      "creator_user_id": null
+    }
+  ]
+}

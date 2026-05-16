@@ -1,0 +1,2533 @@
+<template>
+  <AppNavbar />
+
+  <div class="venue-browsing-shell" :class="themeClass">
+    <v-container fluid class="page-container py-6 py-md-8 px-3 px-sm-4 px-md-6">
+      <v-row justify="center">
+        <v-col cols="12" xl="11">
+          <v-card rounded="xl" class="hero-surface hero-surface--blended pa-5 pa-md-7 mb-6" elevation="0">
+            <div class="page-header page-header--single">
+              <div class="hero-copy">
+                <div class="text-overline page-kicker mb-2">BLASSTI VENUES</div>
+
+                <div class="text-h3 text-md-h2 font-weight-bold mb-3 page-title">
+                  Browse venues across Tunisia
+                </div>
+
+                <div class="text-body-1 text-medium-emphasis page-subtitle mb-4">
+                  Discover theatres, cinemas, stadiums, hotels, nightlife spaces, and newly approved venues ready for booking.
+                </div>
+
+                <div class="hero-search-wrap mb-4">
+                  <v-text-field
+                    v-model="search"
+                    label="Search venues, cities, categories..."
+                    variant="outlined"
+                    rounded="xl"
+                    density="comfortable"
+                    prepend-inner-icon="mdi-magnify"
+                    clearable
+                    hide-details
+                    class="hero-search-field"
+                  >
+                    <template #append-inner>
+                      <v-fade-transition>
+                        <v-chip
+                          v-if="normalizedSearch"
+                          size="small"
+                          rounded="lg"
+                          color="primary"
+                          variant="tonal"
+                        >
+                          Live search
+                        </v-chip>
+                      </v-fade-transition>
+                    </template>
+                  </v-text-field>
+
+                  <div class="d-flex flex-wrap ga-2 mt-3">
+                    <v-chip
+                      v-for="quickFilter in quickFilterChips"
+                      :key="quickFilter.value"
+                      rounded="lg"
+                      :color="selectedCategory === quickFilter.value ? 'primary' : undefined"
+                      :variant="selectedCategory === quickFilter.value ? 'flat' : 'outlined'"
+                      class="quick-filter-chip"
+                      @click="toggleQuickCategory(quickFilter.value)"
+                    >
+                      <v-icon start size="16">{{ quickFilter.icon }}</v-icon>
+                      {{ quickFilter.label }}
+                    </v-chip>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-wrap ga-2 hero-tags">
+                  <v-chip color="primary" variant="tonal" rounded="lg">
+                    <v-icon size="16" class="me-2">mdi-domain</v-icon>
+                    {{ filteredAndSortedVenues.length }} venues found
+                  </v-chip>
+
+                  <v-chip variant="outlined" rounded="lg">
+                    <v-icon size="16" class="me-2">mdi-check-decagram-outline</v-icon>
+                    {{ availableVenuesCount }} available now
+                  </v-chip>
+
+                  <v-chip variant="outlined" rounded="lg">
+                    <v-icon size="16" class="me-2">mdi-map-marker-radius-outline</v-icon>
+                    {{ locationOptions.length }} cities
+                  </v-chip>
+
+                  <v-chip variant="outlined" rounded="lg">
+                    <v-icon size="16" class="me-2">mdi-shape-outline</v-icon>
+                    {{ categoryOptions.length }} categories
+                  </v-chip>
+                </div>
+              </div>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row v-if="isCompactLayout" justify="center" class="mb-4">
+        <v-col cols="12" xl="11">
+          <v-card rounded="xl" class="compact-toolbar pa-3 pa-sm-4">
+            <div class="compact-toolbar-top">
+              <div>
+                <div class="text-subtitle-1 font-weight-bold">Curated browsing controls</div>
+                <div class="text-body-2 text-medium-emphasis">Open filters, change sorting, and browse without the left sidebar taking over the screen.</div>
+              </div>
+
+              <v-btn
+                color="primary"
+                rounded="xl"
+                variant="flat"
+                class="compact-filter-btn"
+                @click="showMobileFilters = true"
+              >
+                <v-icon start>mdi-tune-variant</v-icon>
+                Filters
+                <v-chip
+                  v-if="hasActiveFilters || !showUnavailable"
+                  size="x-small"
+                  rounded="pill"
+                  class="ms-2"
+                  color="white"
+                  variant="flat"
+                >
+                  {{ activeFilterCount + (!showUnavailable ? 1 : 0) }}
+                </v-chip>
+              </v-btn>
+            </div>
+
+            <div class="compact-toolbar-pills mt-3">
+              <v-chip color="primary" variant="tonal" rounded="lg">
+                <v-icon start size="16">mdi-domain</v-icon>
+                {{ filteredAndSortedVenues.length }} results
+              </v-chip>
+              <v-chip variant="outlined" rounded="lg">
+                <v-icon start size="16">mdi-sort</v-icon>
+                {{ activeSortLabel }}
+              </v-chip>
+              <v-chip :variant="showUnavailable ? 'outlined' : 'tonal'" :color="showUnavailable ? undefined : 'success'" rounded="lg">
+                <v-icon start size="16">{{ showUnavailable ? 'mdi-eye-outline' : 'mdi-eye' }}</v-icon>
+                {{ showUnavailable ? 'All venues' : 'Available only' }}
+              </v-chip>
+            </div>
+
+            <div class="compact-toolbar-scroll mt-3">
+              <v-chip
+                v-for="quickFilter in quickFilterChips"
+                :key="`compact-${quickFilter.value}`"
+                rounded="xl"
+                :color="selectedCategory === quickFilter.value ? 'primary' : undefined"
+                :variant="selectedCategory === quickFilter.value ? 'flat' : 'outlined'"
+                class="quick-filter-chip"
+                @click="toggleQuickCategory(quickFilter.value)"
+              >
+                <v-icon start size="16">{{ quickFilter.icon }}</v-icon>
+                {{ quickFilter.label }}
+              </v-chip>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row justify="center" align="start" class="content-row">
+        <!-- SIDE FILTERS -->
+        <v-col v-if="!isCompactLayout" cols="12" lg="3" xl="3">
+          <v-card rounded="xl" class="filter-card pa-4">
+            <div class="d-flex align-center justify-space-between mb-3">
+              <div>
+                <div class="text-h6 font-weight-bold">Filters</div>
+                <div class="text-caption text-medium-emphasis">Refine venues faster with smart availability-first browsing.</div>
+              </div>
+
+              <v-chip
+                size="small"
+                rounded="lg"
+                color="primary"
+                :variant="hasActiveFilters ? 'flat' : 'tonal'"
+              >
+                {{ hasActiveFilters ? "Active" : "Default" }}
+              </v-chip>
+            </div>
+
+            <div class="filter-status-row mb-4">
+              <v-chip
+                size="small"
+                rounded="lg"
+                color="primary"
+                :variant="showUnavailable ? 'outlined' : 'tonal'"
+              >
+                {{ showUnavailable ? 'Showing all venues' : 'Available only' }}
+              </v-chip>
+              <v-chip
+                v-if="hasActiveFilters"
+                size="small"
+                rounded="lg"
+                color="primary"
+                variant="flat"
+              >
+                {{ activeFilterCount }} active
+              </v-chip>
+            </div>
+
+            <v-select
+              v-model="selectedLocation"
+              :items="locationOptions"
+              label="City / State"
+              variant="outlined"
+              rounded="lg"
+              density="comfortable"
+              clearable
+              hide-details
+              class="mb-4"
+            />
+
+            <v-select
+              v-model="selectedType"
+              :items="typeOptions"
+              label="Venue type"
+              variant="outlined"
+              rounded="lg"
+              density="comfortable"
+              clearable
+              hide-details
+              class="mb-4"
+            />
+
+            <v-select
+              v-model="selectedCategory"
+              :items="categoryOptions"
+              label="Category"
+              variant="outlined"
+              rounded="lg"
+              density="comfortable"
+              clearable
+              hide-details
+              class="mb-4"
+            />
+
+            <div class="filter-section mb-4">
+              <div class="d-flex align-center justify-space-between mb-2">
+                <div class="text-subtitle-2 font-weight-bold">Availability</div>
+                <v-switch
+                  v-model="showUnavailable"
+                  color="primary"
+                  hide-details
+                  inset
+                  density="compact"
+                  class="show-unavailable-switch"
+                >
+                  <template #label>
+                    <span class="text-body-2">Show unavailable</span>
+                  </template>
+                </v-switch>
+              </div>
+
+              <div class="d-flex flex-wrap ga-2 availability-chip-group">
+                <v-chip
+                  v-for="option in availabilityOptions"
+                  :key="option"
+                  rounded="lg"
+                  filter
+                  :color="selectedAvailability === option ? 'primary' : undefined"
+                  :variant="selectedAvailability === option ? 'flat' : 'outlined'"
+                  class="availability-filter-chip"
+                  @click="toggleAvailability(option)"
+                >
+                  <v-icon start size="16">
+                    {{ option === 'Available' ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
+                  </v-icon>
+                  {{ option }}
+                </v-chip>
+              </div>
+            </div>
+
+            <v-select
+              v-model="sortBy"
+              :items="sortOptions"
+              label="Sort by"
+              variant="outlined"
+              rounded="lg"
+              density="comfortable"
+              hide-details
+              class="mb-4"
+            />
+
+            <div class="filter-divider mb-4"></div>
+
+            <div v-if="hasActiveFilters" class="active-filter-callout mb-4">
+              <div class="text-body-2 font-weight-medium mb-1">Filters are shaping your results</div>
+              <div class="text-caption text-medium-emphasis">Remove chips below or reset everything in one click.</div>
+            </div>
+
+            <div class="d-flex flex-column ga-3">
+              <v-btn
+                color="primary"
+                rounded="lg"
+                variant="flat"
+                block
+                size="large"
+                @click="resetFilters"
+              >
+                <v-icon start>mdi-filter-off-outline</v-icon>
+                Reset filters
+              </v-btn>
+
+              <v-btn
+                variant="text"
+                rounded="lg"
+                block
+                class="clear-top-btn"
+                @click="clearOnlyFilters"
+              >
+                <v-icon start>mdi-close-circle-outline</v-icon>
+                Clear active filters
+              </v-btn>
+
+              <div class="text-caption text-medium-emphasis filter-tip">
+                Tip: Right-click on desktop or long press on mobile to open any venue in a new tab or a new window.
+              </div>
+            </div>
+          </v-card>
+        </v-col>
+
+        <!-- RESULTS -->
+        <v-col cols="12" lg="9" xl="8">
+          <v-card rounded="xl" class="results-toolbar pa-3 pa-md-4 mb-4" :class="{ 'results-toolbar--compact': isCompactLayout }">
+            <div class="d-flex flex-column flex-md-row align-md-center justify-space-between ga-3">
+              <div>
+                <div class="text-subtitle-1 font-weight-bold">
+                  {{ filteredAndSortedVenues.length }} result{{ filteredAndSortedVenues.length === 1 ? "" : "s" }}
+                </div>
+                <div class="text-body-2 text-medium-emphasis">
+                  Refined by your search, filters, and sorting preferences.
+                </div>
+                <div class="d-flex flex-wrap ga-2 mt-2">
+                  <v-chip size="x-small" rounded="lg" :variant="showUnavailable ? 'outlined' : 'tonal'" color="primary">
+                    {{ showUnavailable ? 'Including unavailable venues' : 'Unavailable venues hidden' }}
+                  </v-chip>
+                  <v-chip v-if="normalizedSearch" size="x-small" rounded="lg" variant="outlined">
+                    Searching for “{{ truncateText(search, 18) }}”
+                  </v-chip>
+                </div>
+              </div>
+
+              <div class="d-flex flex-wrap ga-2 results-toolbar-actions">
+                <v-btn
+                  v-if="isCompactLayout"
+                  rounded="lg"
+                  variant="outlined"
+                  class="toolbar-filter-btn"
+                  @click="showMobileFilters = true"
+                >
+                  <v-icon start>mdi-filter-variant</v-icon>
+                  Filter &amp; sort
+                </v-btn>
+
+                <v-chip size="small" rounded="lg" color="primary" variant="tonal">
+                  <v-icon start size="16">mdi-sort</v-icon>
+                  {{
+                    sortOptions.find(option => option.value === sortBy)?.title || "Highest rating"
+                  }}
+                </v-chip>
+
+                <v-chip
+                  size="small"
+                  rounded="lg"
+                  :color="hasActiveFilters ? 'primary' : undefined"
+                  :variant="hasActiveFilters ? 'tonal' : 'outlined'"
+                >
+                  <v-icon start size="16">mdi-tune-variant</v-icon>
+                  {{ hasActiveFilters ? "Filters applied" : "No filters applied" }}
+                </v-chip>
+
+                <v-chip
+                  size="small"
+                  rounded="lg"
+                  :color="showUnavailable ? undefined : 'success'"
+                  :variant="showUnavailable ? 'outlined' : 'tonal'"
+                >
+                  <v-icon start size="16">{{ showUnavailable ? 'mdi-eye-outline' : 'mdi-eye' }}</v-icon>
+                  {{ showUnavailable ? 'Showing unavailable too' : 'Only available shown' }}
+                </v-chip>
+              </div>
+            </div>
+          </v-card>
+
+          <div v-if="hasActiveFilters || !showUnavailable" class="d-flex flex-wrap ga-2 mb-4 active-chips-wrap">
+            <v-chip
+              v-if="normalizedSearch"
+              closable
+              rounded="lg"
+              color="primary"
+              variant="tonal"
+              @click:close="search = ''"
+            >
+              Search: {{ search }}
+            </v-chip>
+
+            <v-chip
+              v-if="selectedLocation"
+              closable
+              rounded="lg"
+              color="primary"
+              variant="tonal"
+              @click:close="selectedLocation = null"
+            >
+              City/State: {{ selectedLocation }}
+            </v-chip>
+
+            <v-chip
+              v-if="selectedType"
+              closable
+              rounded="lg"
+              color="primary"
+              variant="tonal"
+              @click:close="selectedType = null"
+            >
+              Type: {{ selectedType }}
+            </v-chip>
+
+            <v-chip
+              v-if="selectedCategory"
+              closable
+              rounded="lg"
+              color="primary"
+              variant="tonal"
+              @click:close="selectedCategory = null"
+            >
+              Category: {{ selectedCategory }}
+            </v-chip>
+
+            <v-chip
+              v-if="selectedAvailability"
+              closable
+              rounded="lg"
+              color="primary"
+              variant="tonal"
+              @click:close="selectedAvailability = null"
+            >
+              Availability: {{ selectedAvailability }}
+            </v-chip>
+
+            <v-chip
+              v-if="!showUnavailable"
+              closable
+              rounded="lg"
+              color="success"
+              variant="tonal"
+              @click:close="showUnavailable = true"
+            >
+              Hiding unavailable venues
+            </v-chip>
+          </div>
+
+          <template v-if="filteredAndSortedVenues.length">
+            <div v-if="isMobile" class="mobile-results-shell">
+              <v-card
+                v-if="featuredVenue"
+                rounded="xl"
+                class="venue-card venue-card--featured venue-card--featured-mobile d-flex flex-column mb-4"
+                :class="{
+                  'venue-card--compact': isCompactLayout,
+                  'venue-card--mobile': isMobile,
+                  'venue-card--unavailable': !featuredVenue.availability
+                }"
+                @click="openVenue(featuredVenue)"
+                @contextmenu.prevent="openVenueContextMenu($event, featuredVenue)"
+                @touchstart.passive="startVenueLongPress($event, featuredVenue)"
+                @touchend="cancelVenueLongPress"
+                @touchmove="cancelVenueLongPress"
+                @touchcancel="cancelVenueLongPress"
+              >
+                <div class="venue-image-wrap venue-image-wrap--featured">
+                  <img
+                    :src="featuredVenue.image"
+                    :alt="featuredVenue.title"
+                    class="venue-image"
+                  />
+
+                  <div class="venue-image-overlay"></div>
+                  <div class="venue-image-glow"></div>
+
+                  <div class="venue-image-top">
+                    <v-chip
+                      size="small"
+                      :color="featuredVenue.availability ? 'success' : 'error'"
+                      variant="elevated"
+                      rounded="lg"
+                    >
+                      {{ featuredVenue.availability ? "Available" : "Unavailable" }}
+                    </v-chip>
+                  </div>
+
+                  <div class="venue-image-top-left">
+                    <v-chip
+                      size="small"
+                      variant="flat"
+                      rounded="lg"
+                      class="glass-chip"
+                    >
+                      <v-icon size="15" class="me-1">mdi-map-marker-outline</v-icon>
+                      {{ featuredVenue.location }}
+                    </v-chip>
+                  </div>
+
+                  <div class="venue-image-bottom">
+                    <div class="d-flex align-center justify-space-between flex-wrap ga-2">
+                      <div class="text-body-2 d-flex align-center text-white font-weight-medium">
+                        <v-icon size="16" class="me-1">mdi-ticket-confirmation-outline</v-icon>
+                        {{ featuredVenue.category }}
+                      </div>
+
+                      <div class="mini-price-pill">
+                        {{ featuredVenue.price_per_hour }} TND / hr
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <v-card-text class="pa-4 d-flex flex-column flex-grow-1">
+                  <div class="mobile-featured-header mb-3">
+                    <div>
+                      <div class="text-overline mobile-featured-kicker mb-1">Featured venue</div>
+                      <div class="text-h5 font-weight-bold venue-title mb-2">
+                        {{ featuredVenue.title }}
+                      </div>
+                    </div>
+
+                    <div class="rating-pill">
+                      <v-icon size="15" color="warning">mdi-star</v-icon>
+                      <span>{{ formatRating(featuredVenue.review_rating) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="text-body-2 text-medium-emphasis d-flex align-center mb-3">
+                    <v-icon size="16" class="me-1">mdi-map</v-icon>
+                    {{ truncateText(featuredVenue.exact_address, 72) }}
+                  </div>
+
+                  <div class="d-flex flex-wrap ga-2 mb-3">
+                    <v-chip size="small" variant="outlined" rounded="lg" class="info-chip">
+                      {{ featuredVenue.category }}
+                    </v-chip>
+                    <v-chip size="small" variant="outlined" rounded="lg" class="info-chip">
+                      {{ featuredVenue.type }}
+                    </v-chip>
+                  </div>
+
+                  <div class="text-body-2 card-description mb-4">
+                    {{ truncateText(featuredVenue.description, 110) }}
+                  </div>
+
+                  <div class="mobile-featured-meta mb-4">
+                    <div class="meta-item">
+                      <div class="meta-label">Capacity</div>
+                      <div class="meta-value">{{ formatNumber(featuredVenue.capacity) }}</div>
+                    </div>
+
+                    <div class="meta-item">
+                      <div class="meta-label">Price / hour</div>
+                      <div class="meta-value">{{ featuredVenue.price_per_hour }} TND</div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex ga-2 venue-action-row mt-auto">
+                    <v-btn
+                      block
+                      rounded="lg"
+                      color="primary"
+                      variant="flat"
+                      size="large"
+                      class="venue-action-btn"
+                      @click.stop="openVenue(featuredVenue)"
+                      @contextmenu.prevent.stop="openVenueContextMenu($event, featuredVenue)"
+                      @touchstart.passive.stop="startVenueLongPress($event, featuredVenue)"
+                      @touchend.stop="cancelVenueLongPress"
+                      @touchmove.stop="cancelVenueLongPress"
+                      @touchcancel.stop="cancelVenueLongPress"
+                    >
+                      <v-icon start>mdi-arrow-top-right</v-icon>
+                      View venue
+                    </v-btn>
+
+                    <v-btn
+                      icon
+                      rounded="lg"
+                      variant="tonal"
+                      color="primary"
+                      class="venue-more-btn"
+                      @click.stop="openVenue(featuredVenue)"
+                      @contextmenu.prevent.stop="openVenueContextMenu($event, featuredVenue)"
+                      @touchstart.passive.stop="startVenueLongPress($event, featuredVenue)"
+                      @touchend.stop="cancelVenueLongPress"
+                      @touchmove.stop="cancelVenueLongPress"
+                      @touchcancel.stop="cancelVenueLongPress"
+                    >
+                      <v-icon>mdi-dots-horizontal</v-icon>
+                    </v-btn>
+                  </div>
+                </v-card-text>
+              </v-card>
+
+              <div v-if="remainingVenues.length" class="mobile-section-head mb-3">
+                <div>
+                  <div class="text-subtitle-1 font-weight-bold">Keep browsing</div>
+                  <div class="text-body-2 text-medium-emphasis">Swipe through the rest instead of fighting one long repetitive list.</div>
+                </div>
+              </div>
+
+              <div v-if="remainingVenues.length" class="mobile-venue-carousel">
+                <v-card
+                  v-for="venue in remainingVenues"
+                  :key="venue.id"
+                  rounded="xl"
+                  class="venue-card venue-card--mobile-rail d-flex flex-column"
+                  :class="{
+                    'venue-card--compact': isCompactLayout,
+                    'venue-card--mobile': isMobile,
+                    'venue-card--unavailable': !venue.availability
+                  }"
+                  @click="openVenue(venue)"
+                  @contextmenu.prevent="openVenueContextMenu($event, venue)"
+                  @touchstart.passive="startVenueLongPress($event, venue)"
+                  @touchend="cancelVenueLongPress"
+                  @touchmove="cancelVenueLongPress"
+                  @touchcancel="cancelVenueLongPress"
+                >
+                  <div class="venue-image-wrap venue-image-wrap--rail">
+                    <img
+                      :src="venue.image"
+                      :alt="venue.title"
+                      class="venue-image"
+                    />
+
+                    <div class="venue-image-overlay"></div>
+                    <div class="venue-image-glow"></div>
+
+                    <div class="venue-image-top">
+                      <v-chip
+                        size="x-small"
+                        :color="venue.availability ? 'success' : 'error'"
+                        variant="elevated"
+                        rounded="lg"
+                      >
+                        {{ venue.availability ? "Available" : "Unavailable" }}
+                      </v-chip>
+                    </div>
+
+                    <div class="venue-image-top-left">
+                      <v-chip
+                        size="x-small"
+                        variant="flat"
+                        rounded="lg"
+                        class="glass-chip"
+                      >
+                        <v-icon size="14" class="me-1">mdi-map-marker-outline</v-icon>
+                        {{ venue.location }}
+                      </v-chip>
+                    </div>
+
+                    <div class="venue-image-bottom">
+                      <div class="d-flex align-center justify-space-between flex-wrap ga-2">
+                        <div class="text-caption d-flex align-center text-white font-weight-medium">
+                          <v-icon size="15" class="me-1">mdi-ticket-confirmation-outline</v-icon>
+                          {{ venue.category }}
+                        </div>
+
+                        <div class="mini-price-pill">
+                          {{ venue.price_per_hour }} TND / hr
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <v-card-text class="pa-4 d-flex flex-column flex-grow-1">
+                    <div class="d-flex align-start justify-space-between ga-3 mb-2">
+                      <div class="text-subtitle-1 font-weight-bold venue-title">
+                        {{ venue.title }}
+                      </div>
+
+                      <div class="rating-pill">
+                        <v-icon size="15" color="warning">mdi-star</v-icon>
+                        <span>{{ formatRating(venue.review_rating) }}</span>
+                      </div>
+                    </div>
+
+                    <div class="text-body-2 text-medium-emphasis d-flex align-center mb-3">
+                      <v-icon size="16" class="me-1">mdi-map</v-icon>
+                      {{ truncateText(venue.exact_address, 44) }}
+                    </div>
+
+                    <div class="d-flex flex-wrap ga-2 mb-3">
+                      <v-chip size="x-small" variant="outlined" rounded="lg" class="info-chip">
+                        {{ venue.type }}
+                      </v-chip>
+                      <v-chip size="x-small" variant="outlined" rounded="lg" class="info-chip">
+                        {{ formatNumber(venue.capacity) }} seats
+                      </v-chip>
+                    </div>
+
+                    <div class="text-body-2 card-description mb-4">
+                      {{ truncateText(venue.description, 72) }}
+                    </div>
+
+                    <div class="d-flex ga-2 venue-action-row mt-auto">
+                      <v-btn
+                        block
+                        rounded="lg"
+                        color="primary"
+                        variant="flat"
+                        class="venue-action-btn"
+                        @click.stop="openVenue(venue)"
+                        @contextmenu.prevent.stop="openVenueContextMenu($event, venue)"
+                        @touchstart.passive.stop="startVenueLongPress($event, venue)"
+                        @touchend.stop="cancelVenueLongPress"
+                        @touchmove.stop="cancelVenueLongPress"
+                        @touchcancel.stop="cancelVenueLongPress"
+                      >
+                        <v-icon start>mdi-arrow-top-right</v-icon>
+                        View venue
+                      </v-btn>
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </div>
+            </div>
+
+            <v-row v-else>
+              <v-col
+                v-for="(venue, index) in filteredAndSortedVenues"
+                :key="venue.id"
+                cols="12"
+                sm="6"
+                xl="4"
+                :md="isTablet && index === 0 ? 12 : 6"
+                class="venue-grid-col"
+              >
+                <v-card
+                  rounded="xl"
+                  class="venue-card h-100 d-flex flex-column"
+                  :class="{
+                    'venue-card--compact': isCompactLayout,
+                    'venue-card--tablet-featured': isTablet && index === 0,
+                    'venue-card--unavailable': !venue.availability
+                  }"
+                  @click="openVenue(venue)"
+                  @contextmenu.prevent="openVenueContextMenu($event, venue)"
+                  @touchstart.passive="startVenueLongPress($event, venue)"
+                  @touchend="cancelVenueLongPress"
+                  @touchmove="cancelVenueLongPress"
+                  @touchcancel="cancelVenueLongPress"
+                >
+                  <div class="venue-image-wrap" :class="{ 'venue-image-wrap--tablet-featured': isTablet && index === 0 }">
+                    <img
+                      :src="venue.image"
+                      :alt="venue.title"
+                      class="venue-image"
+                    />
+
+                    <div class="venue-image-overlay"></div>
+                    <div class="venue-image-glow"></div>
+
+                    <div class="venue-image-top">
+                      <v-chip
+                        size="small"
+                        :color="venue.availability ? 'success' : 'error'"
+                        variant="elevated"
+                        rounded="lg"
+                      >
+                        {{ venue.availability ? "Available" : "Unavailable" }}
+                      </v-chip>
+                    </div>
+
+                    <div class="venue-image-top-left">
+                      <v-chip
+                        size="small"
+                        variant="flat"
+                        rounded="lg"
+                        class="glass-chip"
+                      >
+                        <v-icon size="15" class="me-1">mdi-map-marker-outline</v-icon>
+                        {{ venue.location }}
+                      </v-chip>
+                    </div>
+
+                    <div class="venue-image-bottom">
+                      <div class="d-flex align-center justify-space-between flex-wrap ga-2">
+                        <div class="text-body-2 d-flex align-center text-white font-weight-medium">
+                          <v-icon size="16" class="me-1">mdi-ticket-confirmation-outline</v-icon>
+                          {{ venue.category }}
+                        </div>
+
+                        <div class="mini-price-pill">
+                          {{ venue.price_per_hour }} TND / hr
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="quick-action-hint">
+                      <v-icon size="16" class="me-1">mdi-cursor-default-click-outline</v-icon>
+                      {{ isTouchDevice ? (isMobile ? "Tap for details" : "Tap to open") : "Click to open" }}
+                    </div>
+                  </div>
+
+                  <v-card-text class="pa-4 pa-md-5 d-flex flex-column flex-grow-1" :class="{ 'venue-card-text--tablet-featured': isTablet && index === 0 }">
+                    <div class="d-flex align-start justify-space-between ga-3 mb-2">
+                      <div class="text-h6 font-weight-bold venue-title" :class="{ 'text-subtitle-1': isCompactLayout }">
+                        {{ venue.title }}
+                      </div>
+
+                      <div class="rating-pill">
+                        <v-icon size="15" color="warning">mdi-star</v-icon>
+                        <span>{{ formatRating(venue.review_rating) }}</span>
+                      </div>
+                    </div>
+
+                    <div class="text-body-2 text-medium-emphasis d-flex align-center mb-2">
+                      <v-icon size="16" class="me-1">mdi-map</v-icon>
+                      {{ truncateText(venue.exact_address, isTablet && index === 0 ? 82 : 55) }}
+                    </div>
+
+                    <div class="d-flex flex-wrap ga-2 mb-3">
+                      <v-chip size="small" variant="outlined" rounded="lg" class="info-chip">
+                        {{ venue.category }}
+                      </v-chip>
+                      <v-chip size="small" variant="outlined" rounded="lg" class="info-chip">
+                        {{ venue.type }}
+                      </v-chip>
+                    </div>
+
+                    <div class="text-body-2 card-description mb-4">
+                      {{ truncateText(venue.description, isTablet && index === 0 ? 156 : isTablet ? 92 : 120) }}
+                    </div>
+
+                    <div class="venue-meta-grid mb-4">
+                      <div class="meta-item">
+                        <div class="meta-label">Capacity</div>
+                        <div class="meta-value">{{ formatNumber(venue.capacity) }}</div>
+                      </div>
+
+                      <div class="meta-item">
+                        <div class="meta-label">Price / hour</div>
+                        <div class="meta-value">{{ venue.price_per_hour }} TND</div>
+                      </div>
+                    </div>
+
+                    <div class="mt-auto">
+                      <div v-if="!isCompactLayout" class="d-flex align-center justify-space-between stat-row mb-2">
+                        <span class="text-body-2 text-medium-emphasis">Capacity</span>
+                        <span class="text-body-2 font-weight-bold">{{ formatNumber(venue.capacity) }}</span>
+                      </div>
+
+                      <div v-if="!isCompactLayout" class="d-flex align-center justify-space-between stat-row mb-4">
+                        <span class="text-body-2 text-medium-emphasis">Price / hour</span>
+                        <span class="text-body-2 font-weight-bold">{{ venue.price_per_hour }} TND</span>
+                      </div>
+
+                      <div class="d-flex ga-2 venue-action-row">
+                        <v-btn
+                          block
+                          rounded="lg"
+                          color="primary"
+                          variant="flat"
+                          size="large"
+                          class="venue-action-btn"
+                          @click.stop="openVenue(venue)"
+                          @contextmenu.prevent.stop="openVenueContextMenu($event, venue)"
+                          @touchstart.passive.stop="startVenueLongPress($event, venue)"
+                          @touchend.stop="cancelVenueLongPress"
+                          @touchmove.stop="cancelVenueLongPress"
+                          @touchcancel.stop="cancelVenueLongPress"
+                        >
+                          <v-icon start>mdi-arrow-top-right</v-icon>
+                          View venue
+                        </v-btn>
+
+                        <v-btn
+                          icon
+                          rounded="lg"
+                          variant="tonal"
+                          color="primary"
+                          class="venue-more-btn"
+                          @click.stop="openVenue(venue)"
+                          @contextmenu.prevent.stop="openVenueContextMenu($event, venue)"
+                          @touchstart.passive.stop="startVenueLongPress($event, venue)"
+                          @touchend.stop="cancelVenueLongPress"
+                          @touchmove.stop="cancelVenueLongPress"
+                          @touchcancel.stop="cancelVenueLongPress"
+                        >
+                          <v-icon>mdi-dots-horizontal</v-icon>
+                          <v-tooltip activator="parent" location="top">
+                            {{ isTouchDevice ? "Long press for new tab / new window" : "Right-click for new tab / new window" }}
+                          </v-tooltip>
+                        </v-btn>
+                      </div>
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </template>
+
+          <v-card
+            v-else
+            rounded="xl"
+            class="pa-8 text-center empty-card"
+          >
+            <v-icon size="56" class="mb-4 empty-icon">mdi-domain-off</v-icon>
+
+            <div class="text-h5 font-weight-bold mb-2">No venues found</div>
+
+            <div class="text-body-1 text-medium-emphasis mb-6">
+              Try changing your search, filters, or sorting options to discover more places.
+              <span v-if="!showUnavailable"> You can also enable unavailable venues from the filter panel.</span>
+            </div>
+
+            <div class="d-flex justify-center flex-wrap ga-3">
+              <v-btn color="primary" rounded="lg" size="large" @click="resetFilters">
+                <v-icon start>mdi-filter-off-outline</v-icon>
+                Clear filters
+              </v-btn>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
+
+  <v-bottom-sheet v-model="showMobileFilters" inset>
+    <v-card rounded="t-xl" class="mobile-filter-sheet" :class="themeClass">
+      <div class="mobile-filter-sheet__handle"></div>
+
+      <div class="d-flex align-start justify-space-between ga-3 mb-4">
+        <div>
+          <div class="text-h6 font-weight-bold">Browse controls</div>
+          <div class="text-body-2 text-medium-emphasis">Designed for tablet and phone so filtering does not crush the browsing layout.</div>
+        </div>
+
+        <v-btn icon variant="text" @click="showMobileFilters = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </div>
+
+      <div class="mobile-sheet-grid">
+        <v-select v-model="sortBy" :items="sortOptions" label="Sort by" variant="outlined" rounded="lg" density="comfortable" hide-details />
+        <v-select v-model="selectedLocation" :items="locationOptions" label="City / State" variant="outlined" rounded="lg" density="comfortable" clearable hide-details />
+        <v-select v-model="selectedType" :items="typeOptions" label="Venue type" variant="outlined" rounded="lg" density="comfortable" clearable hide-details />
+        <v-select v-model="selectedCategory" :items="categoryOptions" label="Category" variant="outlined" rounded="lg" density="comfortable" clearable hide-details />
+      </div>
+
+      <div class="mobile-sheet-section mt-4">
+        <div class="d-flex align-center justify-space-between mb-3 ga-3">
+          <div>
+            <div class="text-subtitle-2 font-weight-bold">Availability</div>
+            <div class="text-caption text-medium-emphasis">Toggle visibility and focus on what can be booked right now.</div>
+          </div>
+
+          <v-switch v-model="showUnavailable" color="primary" hide-details inset density="compact">
+            <template #label>
+              <span class="text-body-2">Show unavailable</span>
+            </template>
+          </v-switch>
+        </div>
+
+        <div class="compact-toolbar-pills">
+          <v-chip
+            v-for="option in availabilityOptions"
+            :key="`sheet-${option}`"
+            rounded="lg"
+            filter
+            :color="selectedAvailability === option ? 'primary' : undefined"
+            :variant="selectedAvailability === option ? 'flat' : 'outlined'"
+            class="availability-filter-chip"
+            @click="toggleAvailability(option)"
+          >
+            <v-icon start size="16">
+              {{ option === 'Available' ? 'mdi-check-circle-outline' : 'mdi-close-circle-outline' }}
+            </v-icon>
+            {{ option }}
+          </v-chip>
+        </div>
+      </div>
+
+      <div v-if="hasActiveFilters || !showUnavailable || normalizedSearch" class="compact-toolbar-pills mt-4">
+        <v-chip v-if="normalizedSearch" closable rounded="lg" color="primary" variant="tonal" @click:close="search = ''">Search: {{ truncateText(search, 18) }}</v-chip>
+        <v-chip v-if="selectedLocation" closable rounded="lg" color="primary" variant="tonal" @click:close="selectedLocation = null">{{ selectedLocation }}</v-chip>
+        <v-chip v-if="selectedType" closable rounded="lg" color="primary" variant="tonal" @click:close="selectedType = null">{{ selectedType }}</v-chip>
+        <v-chip v-if="selectedCategory" closable rounded="lg" color="primary" variant="tonal" @click:close="selectedCategory = null">{{ selectedCategory }}</v-chip>
+        <v-chip v-if="selectedAvailability" closable rounded="lg" color="primary" variant="tonal" @click:close="selectedAvailability = null">{{ selectedAvailability }}</v-chip>
+      </div>
+
+      <div class="mobile-sheet-actions mt-5">
+        <v-btn color="primary" rounded="lg" size="large" variant="flat" @click="showMobileFilters = false">Apply and browse</v-btn>
+        <v-btn rounded="lg" size="large" variant="outlined" @click="resetFilters">Reset filters</v-btn>
+        <v-btn rounded="lg" size="large" variant="text" @click="clearOnlyFilters">Clear active filters</v-btn>
+      </div>
+    </v-card>
+  </v-bottom-sheet>
+
+  <!-- Link Context Menu -->
+  <v-menu
+    v-model="linkContextMenu.show"
+    :target="[linkContextMenu.x, linkContextMenu.y]"
+    location="top left"
+    absolute
+    :close-on-content-click="true"
+    transition="scale-transition"
+  >
+    <v-list min-width="220" class="dropdown-list" :class="themeClass">
+      <v-list-subheader>{{ linkContextMenu.label || "Open" }}</v-list-subheader>
+
+      <v-list-item
+        class="dropdown-item"
+        title="Open in new tab"
+        prepend-icon="mdi-open-in-new"
+        @click="openContextMenuTargetInNewTab"
+      />
+      <v-list-item
+        class="dropdown-item"
+        title="Open in new window"
+        prepend-icon="mdi-open-in-app"
+        @click="openContextMenuTargetInNewWindow"
+      />
+    </v-list>
+  </v-menu>
+</template>
+
+<script setup>
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { useRouter } from "vue-router"
+import { useDisplay, useTheme } from "vuetify"
+import AppNavbar from "@/components/AppNavbar.vue"
+import { get_All_Venues } from "@/dataModel/venue"
+
+const router = useRouter()
+const theme = useTheme()
+const display = useDisplay()
+
+const THEME_STORAGE_KEY = "blassti-theme"
+const LONG_PRESS_DELAY = 520
+
+const isTouchDevice = computed(() => display.smAndDown.value)
+const isMobile = computed(() => display.xs.value)
+const isTablet = computed(() => display.sm.value || display.md.value)
+const isCompactLayout = computed(() => display.mdAndDown.value)
+const showMobileFilters = ref(false)
+
+const linkContextMenu = ref({
+  show: false,
+  x: 0,
+  y: 0,
+  href: "",
+  label: "",
+})
+
+let longPressTimer = null
+
+function getNormalizedTheme(themeName) {
+  return themeName === "light" ? "light" : "dark"
+}
+
+function applyThemeChoice(themeName) {
+  const normalizedTheme = getNormalizedTheme(themeName)
+  theme.global.name.value = normalizedTheme
+  localStorage.setItem(THEME_STORAGE_KEY, normalizedTheme)
+  document.documentElement.setAttribute("data-app-theme", normalizedTheme)
+  document.documentElement.style.colorScheme = normalizedTheme
+}
+
+function loadSavedTheme() {
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+  applyThemeChoice(savedTheme === "light" ? "light" : "dark")
+}
+
+function handleWindowStorage(event) {
+  if (!event.key || event.key === THEME_STORAGE_KEY) {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+    if (savedTheme === "light" || savedTheme === "dark") {
+      theme.global.name.value = savedTheme
+      document.documentElement.setAttribute("data-app-theme", savedTheme)
+      document.documentElement.style.colorScheme = savedTheme
+    }
+  }
+}
+
+const currentTheme = computed(() => {
+  return theme.global.name.value === "light" ? "light" : "dark"
+})
+
+const themeClass = computed(() => {
+  return currentTheme.value === "dark" ? "theme-dark" : "theme-light"
+})
+
+function cancelVenueLongPress() {
+  if (longPressTimer) {
+    window.clearTimeout(longPressTimer)
+    longPressTimer = null
+  }
+}
+
+function startVenueLongPress(event, venue) {
+  if (!isTouchDevice.value || !venue) return
+
+  const touch = event.touches?.[0]
+  if (!touch) return
+
+  cancelVenueLongPress()
+
+  longPressTimer = window.setTimeout(() => {
+    openRouteContextMenu(
+      {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      },
+      "/O_venueinfo",
+      venue?.title || "Venue details",
+      { id: venue?.id }
+    )
+    longPressTimer = null
+  }, LONG_PRESS_DELAY)
+}
+
+onMounted(() => {
+  loadSavedTheme()
+  window.addEventListener("storage", handleWindowStorage)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("storage", handleWindowStorage)
+  cancelVenueLongPress()
+})
+
+const search = ref("")
+const normalizedSearch = computed(() => search.value.trim().toLowerCase())
+
+watch(search, value => {
+  if (!value || !value.trim()) {
+    search.value = ""
+  }
+})
+
+const selectedLocation = ref(null)
+const selectedType = ref(null)
+const selectedCategory = ref(null)
+const selectedAvailability = ref(null)
+const showUnavailable = ref(false)
+const sortBy = ref("rating_desc")
+
+watch(isCompactLayout, value => {
+  if (!value) {
+    showMobileFilters.value = false
+  }
+})
+
+const sortOptions = [
+  { title: "Highest rating", value: "rating_desc" },
+  { title: "Lowest price", value: "price_asc" },
+  { title: "Highest capacity", value: "capacity_desc" },
+  { title: "A to Z", value: "title_asc" },
+]
+
+const availabilityOptions = ["Available", "Unavailable"]
+const activeSortLabel = computed(() => sortOptions.find(option => option.value === sortBy.value)?.title || "Highest rating")
+const quickFilterChips = [
+  { label: "Concerts", value: "Concert Hall", icon: "mdi-music" },
+  { label: "Sports", value: "Sports Arena", icon: "mdi-basketball" },
+  { label: "Cinema", value: "Cinema", icon: "mdi-movie-open-outline" },
+  { label: "Nightlife", value: "Nightlife", icon: "mdi-glass-cocktail" },
+]
+
+const allVenues = computed(() => get_All_Venues())
+
+const locationOptions = computed(() => {
+  return [...new Set(allVenues.value.map(venue => venue.location).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b)
+  )
+})
+
+const typeOptions = computed(() => {
+  return [...new Set(allVenues.value.map(venue => venue.type).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b)
+  )
+})
+
+const categoryOptions = computed(() => {
+  return [...new Set(allVenues.value.map(venue => venue.category).filter(Boolean))].sort((a, b) =>
+    a.localeCompare(b)
+  )
+})
+
+const availableVenuesCount = computed(() => {
+  return allVenues.value.filter(venue => venue.availability).length
+})
+
+const unavailableVenuesCount = computed(() => {
+  return allVenues.value.filter(venue => !venue.availability).length
+})
+
+const filteredVenues = computed(() => {
+  const searchValue = normalizedSearch.value
+
+  return allVenues.value.filter(venue => {
+    const matchesSearch =
+      !searchValue ||
+      venue.title?.toLowerCase().includes(searchValue) ||
+      venue.location?.toLowerCase().includes(searchValue) ||
+      venue.exact_address?.toLowerCase().includes(searchValue) ||
+      venue.category?.toLowerCase().includes(searchValue) ||
+      venue.type?.toLowerCase().includes(searchValue) ||
+      venue.description?.toLowerCase().includes(searchValue)
+
+    const matchesLocation =
+      !selectedLocation.value || venue.location === selectedLocation.value
+
+    const matchesType =
+      !selectedType.value || venue.type === selectedType.value
+
+    const matchesCategory =
+      !selectedCategory.value || venue.category === selectedCategory.value
+
+    const matchesAvailabilityVisibility = showUnavailable.value || venue.availability
+
+    const matchesAvailability =
+      !selectedAvailability.value ||
+      (selectedAvailability.value === "Available" && venue.availability) ||
+      (selectedAvailability.value === "Unavailable" && !venue.availability)
+
+    return (
+      matchesSearch &&
+      matchesLocation &&
+      matchesType &&
+      matchesCategory &&
+      matchesAvailabilityVisibility &&
+      matchesAvailability
+    )
+  })
+})
+
+const filteredAndSortedVenues = computed(() => {
+  const items = [...filteredVenues.value]
+
+  switch (sortBy.value) {
+    case "price_asc":
+      return items.sort((a, b) => Number(a.price_per_hour || 0) - Number(b.price_per_hour || 0))
+
+    case "capacity_desc":
+      return items.sort((a, b) => Number(b.capacity || 0) - Number(a.capacity || 0))
+
+    case "title_asc":
+      return items.sort((a, b) => String(a.title || "").localeCompare(String(b.title || "")))
+
+    case "rating_desc":
+    default:
+      return items.sort((a, b) => Number(b.review_rating || 0) - Number(a.review_rating || 0))
+  }
+})
+
+const featuredVenue = computed(() => filteredAndSortedVenues.value[0] || null)
+const remainingVenues = computed(() => filteredAndSortedVenues.value.slice(1))
+
+const hasActiveFilters = computed(() => {
+  return Boolean(
+    normalizedSearch.value ||
+    selectedLocation.value ||
+    selectedType.value ||
+    selectedCategory.value ||
+    selectedAvailability.value
+  )
+})
+
+const activeFilterCount = computed(() => {
+  return [normalizedSearch.value, selectedLocation.value, selectedType.value, selectedCategory.value, selectedAvailability.value]
+    .filter(Boolean).length
+})
+
+function clearOnlyFilters() {
+  search.value = ""
+  selectedLocation.value = null
+  selectedType.value = null
+  selectedCategory.value = null
+  selectedAvailability.value = null
+}
+
+function resetFilters() {
+  clearOnlyFilters()
+  showUnavailable.value = false
+  sortBy.value = "rating_desc"
+}
+
+function toggleAvailability(option) {
+  selectedAvailability.value = selectedAvailability.value === option ? null : option
+}
+
+function toggleQuickCategory(category) {
+  selectedCategory.value = selectedCategory.value === category ? null : category
+}
+
+function formatRating(value) {
+  return Number(value || 0).toFixed(1)
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat().format(Number(value || 0))
+}
+
+function truncateText(text, max = 100) {
+  const safeText = String(text || "")
+  if (safeText.length <= max) return safeText
+  return `${safeText.slice(0, max).trim()}...`
+}
+
+function buildVenueHref(venue) {
+  return `/O_venueinfo?id=${venue?.id ?? ""}`
+}
+
+function openVenue(venue) {
+  router.push(buildVenueHref(venue))
+}
+
+function openRouteContextMenu(event, routePath, label = "Open", query = {}) {
+  const resolved = router.resolve({
+    path: routePath,
+    query,
+  })
+
+  linkContextMenu.value = {
+    show: true,
+    x: event?.clientX ?? 0,
+    y: event?.clientY ?? 0,
+    href: resolved.href,
+    label,
+  }
+}
+
+function openVenueContextMenu(event, venue) {
+  openRouteContextMenu(event, "/O_venueinfo", venue?.title || "Venue details", {
+    id: venue?.id,
+  })
+}
+
+function openContextMenuTargetInNewTab() {
+  if (!linkContextMenu.value.href) return
+  window.open(linkContextMenu.value.href, "_blank", "noopener,noreferrer")
+  linkContextMenu.value.show = false
+}
+
+function openContextMenuTargetInNewWindow() {
+  if (!linkContextMenu.value.href) return
+  window.open(linkContextMenu.value.href, "_blank", "noopener,noreferrer,width=1280,height=900")
+  linkContextMenu.value.show = false
+}
+</script>
+
+<style scoped>
+.page-container {
+  position: relative;
+  z-index: 1;
+}
+
+.compact-toolbar {
+  position: relative;
+  overflow: hidden;
+}
+
+.compact-toolbar-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.compact-filter-btn {
+  flex-shrink: 0;
+}
+
+.compact-toolbar-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.compact-toolbar-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.compact-toolbar-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-filter-sheet {
+  padding: 14px 16px calc(18px + env(safe-area-inset-bottom));
+  max-height: min(88vh, 860px);
+  overflow-y: auto;
+}
+
+.mobile-filter-sheet__handle {
+  width: 56px;
+  height: 5px;
+  border-radius: 999px;
+  margin: 0 auto 14px;
+  background: rgba(148, 163, 184, 0.45);
+}
+
+.mobile-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mobile-sheet-section {
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.mobile-sheet-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.results-toolbar--compact .results-toolbar-actions {
+  width: 100%;
+}
+
+.toolbar-filter-btn {
+  flex: 1 1 180px;
+}
+
+.venue-grid-col {
+  display: flex;
+}
+
+.mobile-results-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mobile-venue-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 82vw);
+  gap: 14px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.mobile-venue-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-venue-carousel > * {
+  scroll-snap-align: start;
+}
+
+.mobile-featured-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.mobile-featured-kicker {
+  letter-spacing: 1.5px;
+  color: rgba(var(--v-theme-primary), 0.88);
+}
+
+.mobile-featured-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.venue-action-row {
+  flex-wrap: nowrap;
+}
+
+.content-row {
+  row-gap: 8px;
+}
+
+.venue-browsing-shell {
+  min-height: 100vh;
+  transition:
+    background 0.28s ease,
+    color 0.28s ease;
+}
+
+.venue-browsing-shell {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.venue-browsing-shell::before,
+.venue-browsing-shell::after {
+  content: "";
+  position: fixed;
+  inset: auto;
+  width: 26rem;
+  height: 26rem;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.18;
+  z-index: 0;
+  animation: heroGlowFloat 12s ease-in-out infinite;
+}
+
+.venue-browsing-shell::before {
+  top: 88px;
+  left: -120px;
+  background: rgba(var(--v-theme-primary), 0.22);
+}
+
+.venue-browsing-shell::after {
+  right: -140px;
+  top: 240px;
+  background: rgba(var(--v-theme-primary), 0.14);
+  animation-delay: -4s;
+}
+
+.hero-surface,
+.filter-card,
+.results-toolbar,
+.venue-card,
+.empty-card {
+  animation: pageFadeLift 0.24s ease-out;
+  will-change: transform, opacity;
+}
+
+.quick-action-hint {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.venue-card:active {
+  transform: translateY(-1px) scale(0.998);
+}
+
+.venue-action-btn,
+.venue-more-btn,
+.quick-filter-chip,
+.availability-filter-chip {
+  min-height: 44px;
+}
+
+.dropdown-list.theme-dark,
+.dropdown-list.theme-light {
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+@keyframes heroGlowFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(10px, -14px, 0) scale(1.04);
+  }
+}
+
+@keyframes pageFadeLift {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1279px) {
+  .content-row {
+    row-gap: 12px;
+  }
+}
+
+@media (max-width: 959px) {
+  .compact-toolbar-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .compact-filter-btn {
+    width: 100%;
+  }
+
+  .mobile-sheet-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-toolbar--compact .results-toolbar-actions {
+    display: grid !important;
+    grid-template-columns: 1fr;
+  }
+
+  .venue-action-row {
+    flex-wrap: wrap;
+  }
+
+  .venue-browsing-shell::before,
+  .venue-browsing-shell::after {
+    width: 18rem;
+    height: 18rem;
+    opacity: 0.14;
+  }
+
+  .hero-surface {
+    padding: 22px !important;
+  }
+
+  .page-title {
+    font-size: clamp(2rem, 7vw, 2.8rem) !important;
+    line-height: 1.08;
+  }
+
+  .page-subtitle {
+    max-width: 100%;
+  }
+
+  .hero-tags,
+  .active-chips-wrap {
+    gap: 10px;
+  }
+
+  .results-toolbar :deep(.v-chip),
+  .hero-tags :deep(.v-chip) {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .compact-toolbar {
+    border-radius: 22px !important;
+  }
+
+  .compact-toolbar-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .compact-toolbar-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .compact-toolbar-pills > * {
+    flex: 0 0 auto;
+  }
+
+  .mobile-sheet-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .results-toolbar--compact {
+    position: sticky;
+    top: 76px;
+    z-index: 3;
+  }
+
+  .results-toolbar--compact .results-toolbar-actions :deep(.v-chip),
+  .results-toolbar--compact .results-toolbar-actions .toolbar-filter-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .venue-card--compact .venue-image-wrap {
+    min-height: 196px;
+  }
+
+  .venue-image-wrap--featured {
+    min-height: 236px;
+  }
+
+  .mobile-venue-carousel {
+    grid-auto-columns: minmax(272px, 86vw);
+  }
+
+  .venue-card--compact :deep(.v-card-text) {
+    padding: 16px !important;
+  }
+
+  .venue-card--compact .card-description {
+    margin-bottom: 14px !important;
+  }
+
+  .page-container {
+    padding-top: 20px !important;
+    padding-bottom: 28px !important;
+  }
+
+  .hero-surface {
+    border-radius: 24px !important;
+  }
+
+  .hero-search-wrap :deep(.v-field),
+  .filter-card :deep(.v-field) {
+    min-height: 50px;
+  }
+
+  .filter-card,
+  .results-toolbar,
+  .empty-card {
+    border-radius: 22px !important;
+  }
+
+  .venue-card {
+    border-radius: 22px !important;
+  }
+
+  .venue-image-wrap {
+    min-height: 220px;
+  }
+
+  .venue-card .d-flex.ga-2 {
+    flex-wrap: wrap;
+  }
+
+  .venue-action-btn,
+  .venue-more-btn {
+    flex: 1 1 auto;
+  }
+
+  .venue-more-btn {
+    min-width: 52px;
+  }
+
+  .filter-tip {
+    line-height: 1.45;
+  }
+
+  .quick-action-hint {
+    opacity: 1;
+    transform: translateY(0);
+    background: rgba(10, 14, 24, 0.5);
+  }
+}
+
+/* -------------------- DARK THEME -------------------- */
+.venue-browsing-shell.theme-dark {
+  background:
+    radial-gradient(circle at top, rgba(51, 123, 255, 0.09), transparent 34%),
+    linear-gradient(180deg, #0d1117 0%, #101826 100%);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* -------------------- LIGHT THEME -------------------- */
+.venue-browsing-shell.theme-light {
+  background:
+    radial-gradient(circle at top, rgba(51, 123, 255, 0.12), transparent 30%),
+    linear-gradient(180deg, #f5f8ff 0%, #edf2fb 100%);
+  color: #172033;
+}
+
+.page-header {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hero-surface {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease;
+  animation: subtlePageIn 0.28s ease-out both;
+}
+
+.hero-surface--blended {
+  border-radius: 28px;
+}
+
+.hero-surface--blended::before,
+.hero-surface--blended::after {
+  opacity: 0.3;
+}
+
+.hero-surface::before,
+.hero-surface::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.22;
+  filter: blur(42px);
+  animation: heroGlowFloat 9s ease-in-out infinite alternate;
+}
+
+.hero-surface::before {
+  width: 280px;
+  height: 280px;
+  top: -110px;
+  left: -55px;
+  background: radial-gradient(circle, rgba(57, 153, 255, 0.22) 0%, rgba(57, 153, 255, 0) 72%);
+}
+
+.hero-surface::after {
+  width: 320px;
+  height: 320px;
+  right: -90px;
+  bottom: -140px;
+  background: radial-gradient(circle, rgba(0, 197, 255, 0.18) 0%, rgba(0, 197, 255, 0) 72%);
+  animation-duration: 11s;
+  animation-delay: 0.35s;
+}
+
+.venue-browsing-shell.theme-dark .hero-surface {
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.006)),
+    rgba(13, 17, 23, 0.18);
+  box-shadow: none;
+  backdrop-filter: blur(4px);
+}
+
+.venue-browsing-shell.theme-light .hero-surface {
+  border: 1px solid rgba(19, 35, 62, 0.04);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(248, 251, 255, 0.18)),
+    rgba(255, 255, 255, 0.14);
+  box-shadow: none;
+  backdrop-filter: blur(4px);
+}
+
+.page-header--single {
+  justify-content: center;
+}
+
+.page-header--single .hero-copy {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 700px;
+}
+
+.hero-aside {
+  flex: 0 0 320px;
+  max-width: 360px;
+}
+
+.page-kicker {
+  letter-spacing: 2px;
+  color: rgba(var(--v-theme-primary), 0.9);
+}
+
+.page-title {
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  max-width: 980px;
+  line-height: 1.7;
+}
+
+.hero-search-wrap {
+  max-width: 1180px;
+}
+
+.hero-search-field :deep(.v-field) {
+  backdrop-filter: blur(12px);
+}
+
+.venue-browsing-shell.theme-dark .hero-search-field :deep(.v-field) {
+  background: rgba(9, 14, 23, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.venue-browsing-shell.theme-light .hero-search-field :deep(.v-field) {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(19, 35, 62, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.quick-filter-chip {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.quick-filter-chip:hover {
+  transform: translateY(-1px);
+}
+
+.hero-tags {
+  row-gap: 10px;
+}
+
+.hero-stat-card,
+.filter-card,
+.venue-card,
+.empty-card,
+.results-toolbar {
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease;
+}
+
+.venue-browsing-shell.theme-dark .hero-stat-card,
+.venue-browsing-shell.theme-dark .filter-card,
+.venue-browsing-shell.theme-dark .venue-card,
+.venue-browsing-shell.theme-dark .empty-card,
+.venue-browsing-shell.theme-dark .results-toolbar {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.012)),
+    rgba(13, 17, 23, 0.92);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(10px);
+}
+
+.venue-browsing-shell.theme-light .hero-stat-card,
+.venue-browsing-shell.theme-light .filter-card,
+.venue-browsing-shell.theme-light .venue-card,
+.venue-browsing-shell.theme-light .empty-card,
+.venue-browsing-shell.theme-light .results-toolbar {
+  border: 1px solid rgba(19, 35, 62, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 251, 255, 0.92)),
+    rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 34px rgba(36, 60, 96, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.venue-browsing-shell.theme-dark .compact-toolbar,
+.venue-browsing-shell.theme-dark .mobile-filter-sheet,
+.venue-browsing-shell.theme-dark .mobile-sheet-section {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.012)),
+    rgba(13, 17, 23, 0.96);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(12px);
+}
+
+.venue-browsing-shell.theme-light .compact-toolbar,
+.venue-browsing-shell.theme-light .mobile-filter-sheet,
+.venue-browsing-shell.theme-light .mobile-sheet-section {
+  border: 1px solid rgba(19, 35, 62, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 255, 0.94)),
+    rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 34px rgba(36, 60, 96, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.hero-stat-card:hover,
+.filter-card:hover,
+.results-toolbar:hover {
+  transform: translateY(-2px);
+}
+
+.hero-aside-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.aside-stat-pill {
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.venue-browsing-shell.theme-dark .aside-stat-pill {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.venue-browsing-shell.theme-light .aside-stat-pill {
+  background: rgba(245, 248, 255, 0.86);
+  border: 1px solid rgba(18, 36, 58, 0.08);
+}
+
+.aside-stat-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.aside-stat-label {
+  font-size: 0.8rem;
+  opacity: 0.72;
+}
+
+.hero-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--v-theme-primary));
+  flex-shrink: 0;
+}
+
+.venue-browsing-shell.theme-dark .hero-stat-icon {
+  background: rgba(var(--v-theme-primary), 0.16);
+  border: 1px solid rgba(var(--v-theme-primary), 0.24);
+}
+
+.venue-browsing-shell.theme-light .hero-stat-icon {
+  background: rgba(var(--v-theme-primary), 0.1);
+  border: 1px solid rgba(var(--v-theme-primary), 0.18);
+}
+
+.filter-card {
+  position: sticky;
+  top: 96px;
+  animation: subtlePageIn 0.3s ease-out 0.03s both;
+}
+
+.filter-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-section {
+  border-radius: 18px;
+  padding: 12px 12px 4px;
+}
+
+.venue-browsing-shell.theme-dark .filter-section {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.venue-browsing-shell.theme-light .filter-section {
+  background: rgba(244, 248, 255, 0.9);
+  border: 1px solid rgba(18, 36, 58, 0.07);
+}
+
+.show-unavailable-switch {
+  margin-inline-start: auto;
+}
+
+.availability-chip-group {
+  padding-bottom: 8px;
+}
+
+.availability-filter-chip {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.availability-filter-chip:hover {
+  transform: translateY(-1px);
+}
+
+.active-filter-callout {
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.venue-browsing-shell.theme-dark .active-filter-callout {
+  background: rgba(var(--v-theme-primary), 0.1);
+  border: 1px solid rgba(var(--v-theme-primary), 0.18);
+}
+
+.venue-browsing-shell.theme-light .active-filter-callout {
+  background: rgba(var(--v-theme-primary), 0.08);
+  border: 1px solid rgba(var(--v-theme-primary), 0.14);
+}
+
+.clear-top-btn {
+  justify-content: flex-start;
+}
+
+.filter-divider {
+  height: 1px;
+}
+
+.venue-browsing-shell.theme-dark .filter-divider {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.venue-browsing-shell.theme-light .filter-divider {
+  background: linear-gradient(90deg, transparent, rgba(20, 35, 56, 0.1), transparent);
+}
+
+.filter-tip {
+  line-height: 1.5;
+}
+
+.results-toolbar {
+  overflow: hidden;
+  animation: subtlePageIn 0.3s ease-out 0.06s both;
+}
+
+.active-chips-wrap {
+  align-items: center;
+}
+
+.venue-card {
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+
+.venue-card--featured-mobile {
+  min-height: 100%;
+}
+
+.venue-card--mobile-rail {
+  min-width: 0;
+}
+
+.venue-card--tablet-featured {
+  display: grid !important;
+  grid-template-columns: minmax(320px, 1.05fr) minmax(0, 1fr);
+}
+
+.venue-card-text--tablet-featured {
+  padding-inline: 28px !important;
+}
+
+.venue-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.24s ease;
+}
+
+.venue-browsing-shell.theme-dark .venue-card::after {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.venue-browsing-shell.theme-light .venue-card::after {
+  box-shadow: inset 0 0 0 1px rgba(18, 36, 58, 0.05);
+}
+
+.venue-browsing-shell.theme-dark .venue-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+  border-color: rgba(var(--v-theme-primary), 0.25);
+}
+
+.venue-card:hover::after {
+  opacity: 1;
+}
+
+.venue-browsing-shell.theme-light .venue-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 22px 44px rgba(34, 56, 92, 0.16);
+  border-color: rgba(var(--v-theme-primary), 0.22);
+}
+
+.venue-image-wrap {
+  position: relative;
+  height: 230px;
+  overflow: hidden;
+}
+
+.venue-image-wrap--featured {
+  height: 268px;
+}
+
+.venue-image-wrap--rail {
+  height: 184px;
+}
+
+.venue-image-wrap--tablet-featured {
+  height: 100%;
+  min-height: 100%;
+}
+
+.venue-image-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.18), transparent 28%);
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.venue-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.venue-card:hover .venue-image {
+  transform: scale(1.08);
+}
+
+.venue-card:hover .venue-image-glow {
+  opacity: 1;
+}
+
+.venue-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.68));
+}
+
+.venue-image-top {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 2;
+}
+
+.venue-image-top-left {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+}
+
+.glass-chip {
+  color: white !important;
+  background: rgba(17, 20, 29, 0.42) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(10px);
+}
+
+.venue-image-bottom {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+}
+
+.mini-price-pill {
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(10, 13, 22, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+}
+
+.quick-action-hint {
+  position: absolute;
+  right: 14px;
+  bottom: 48px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  background: rgba(8, 11, 18, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  backdrop-filter: blur(10px);
+}
+
+.venue-card:hover .quick-action-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.venue-title {
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.info-chip {
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.venue-card:hover .info-chip {
+  transform: translateY(-1px);
+}
+
+.rating-pill {
+  min-width: 62px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.venue-browsing-shell.theme-dark .rating-pill {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.venue-browsing-shell.theme-light .rating-pill {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(18, 36, 58, 0.08);
+}
+
+.card-description {
+  line-height: 1.6;
+}
+
+.venue-browsing-shell.theme-dark .card-description {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.venue-browsing-shell.theme-light .card-description {
+  color: rgba(23, 32, 51, 0.82);
+}
+
+.venue-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.meta-item {
+  padding: 12px 14px;
+  border-radius: 16px;
+}
+
+.venue-browsing-shell.theme-dark .meta-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.venue-browsing-shell.theme-light .meta-item {
+  background: rgba(245, 248, 255, 0.9);
+  border: 1px solid rgba(18, 36, 58, 0.07);
+}
+
+.meta-label {
+  font-size: 0.77rem;
+  opacity: 0.72;
+  margin-bottom: 4px;
+}
+
+.meta-value {
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.stat-row {
+  padding-bottom: 6px;
+}
+
+.venue-browsing-shell.theme-dark .stat-row {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.venue-browsing-shell.theme-light .stat-row {
+  border-bottom: 1px dashed rgba(25, 42, 68, 0.12);
+}
+
+.venue-action-btn,
+.venue-more-btn {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.venue-card:hover .venue-action-btn,
+.venue-card:hover .venue-more-btn {
+  transform: translateY(-1px);
+}
+
+.empty-card {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.empty-icon {
+  opacity: 0.86;
+}
+
+.venue-card--unavailable {
+  opacity: 0.88;
+}
+
+.venue-card--unavailable .venue-image {
+  filter: saturate(0.78) brightness(0.92);
+}
+
+.venue-card--unavailable .venue-action-btn {
+  opacity: 0.92;
+}
+
+.dropdown-list {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 18px !important;
+  padding: 8px;
+}
+
+.venue-browsing-shell.theme-dark .dropdown-list,
+.venue-browsing-shell.theme-light .dropdown-list,
+.dropdown-list {
+  background: rgba(20, 20, 25, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+
+.dropdown-item {
+  border-radius: 12px;
+  transition: background 0.14s ease, transform 0.14s ease, box-shadow 0.14s ease;
+}
+
+.dropdown-item:hover {
+  transform: translateX(2px);
+}
+
+.venue-browsing-shell.theme-dark .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.venue-browsing-shell.theme-light .dropdown-item:hover {
+  background: rgba(30, 56, 93, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(30, 56, 93, 0.04);
+}
+
+@keyframes heroGlowFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.18;
+  }
+
+  100% {
+    transform: translate3d(18px, 10px, 0) scale(1.08);
+    opacity: 0.26;
+  }
+}
+
+@keyframes subtlePageIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1280px) {
+  .page-header {
+    align-items: start;
+  }
+
+  .hero-aside {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 960px) {
+  .venue-image-wrap {
+    height: 210px;
+  }
+
+  .venue-card--tablet-featured {
+    grid-template-columns: 1fr;
+  }
+
+  .venue-image-wrap--tablet-featured {
+    min-height: 232px;
+  }
+
+  .venue-card-text--tablet-featured {
+    padding-inline: 20px !important;
+  }
+
+  .filter-card {
+    position: static;
+    top: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .page-title {
+    font-size: 2rem !important;
+  }
+
+  .hero-aside-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .venue-meta-grid,
+  .mobile-featured-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-featured-header {
+    flex-direction: column;
+  }
+
+  .quick-action-hint {
+    display: none;
+  }
+}
+</style>
